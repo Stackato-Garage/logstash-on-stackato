@@ -1,0 +1,20 @@
+name: logstash
+
+mem: 512M
+
+framework:
+  type: standalone
+
+command: java -jar $STACKATO_FILESYSTEM/logstash.jar agent -f logstash.conf
+
+services:
+  port: harbor
+  cache: filesystem
+
+hooks:
+  post-staging:
+    - wget -c -q https://logstash.objects.dreamhost.com/release/logstash-1.1.9-monolithic.jar -O $STACKATO_FILESYSTEM/logstash.jar
+  pre-running:
+    - echo "Connect via: date | nc -v `echo $STACKATO_SERVICES | json port.ext_hostname` `echo $STACKATO_SERVICES | json port.port`"
+
+ignores: [".git", "*.jar"]
